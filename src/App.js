@@ -1,9 +1,12 @@
 import React from 'react';
-import './App.css';
+import Routes from './routes';
+import GeneralProvider from './contexts/GeneralProvider';
 
 function App() {
   return (
-    <span>Hello, App!</span>
+    <GeneralProvider>
+      <Routes />
+    </GeneralProvider>
   );
 }
 
