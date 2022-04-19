@@ -19,8 +19,12 @@ const GeneralProvider = ({ children }) => {
     getData();
   }, []);
 
-  const handleFilters = () => {
+  const handleFilters = (ref) => {
     const { comparison, column, qty, searchTerm } = filters;
+    if (ref === 'searchTerm') {
+      return setResults(allResults.filter((e) => e.name.toLowerCase()
+        .includes(searchTerm.toLowerCase())));
+    }
     const cases = {
       'maior que': () => setResults((!filterQty ? allResults : filteredResults)
         .filter((e) => +e[column] > +qty
@@ -43,7 +47,7 @@ const GeneralProvider = ({ children }) => {
   }, [results]);
 
   useEffect(() => {
-    handleFilters();
+    handleFilters('searchTerm');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.searchTerm]);
 

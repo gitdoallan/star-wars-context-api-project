@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGeneral } from '../contexts/GeneralProvider';
 
 export default function Filters() {
   const { handleFilters, setFilterQty, filters, setFilters } = useGeneral();
+  const [filterOptions, setFilterOptions] = useState(
+    ['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'],
+  );
 
   const handleState = ({ target: { name, value } }) => {
     setFilters({ ...filters, [name]: value });
@@ -11,6 +14,7 @@ export default function Filters() {
   const submitFilters = (e) => {
     e.preventDefault();
     setFilters({ ...filters });
+    setFilterOptions(filterOptions.filter((element) => element !== filters.column));
     setFilterQty(true);
     handleFilters();
   };
@@ -25,11 +29,11 @@ export default function Filters() {
           onChange={ handleState }
           value={ filters.column }
         >
-          <option>population</option>
-          <option>orbital_period</option>
-          <option>diameter</option>
-          <option>rotation_period</option>
-          <option>surface_water</option>
+          {filterOptions.map((e) => (
+            <option key={ e } value={ e }>
+              {e}
+            </option>
+          ))}
         </select>
 
         <select
