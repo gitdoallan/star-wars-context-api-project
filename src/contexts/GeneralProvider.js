@@ -5,7 +5,11 @@ import fetchApi from '../services/api';
 
 const GeneralProvider = ({ children }) => {
   const [allResults, setAllResults] = useState([]);
+  const [filters, setFilters] = useState({
+    comparison: 'maior que', column: 'population', qty: '0', searchTerm: '' });
   const [results, setResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [filterQty, setFilterQty] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -15,15 +19,41 @@ const GeneralProvider = ({ children }) => {
     getData();
   }, []);
 
-  const handleSearch = (({ target: { value } }) => {
-    const searchResults = allResults.filter((e) => e.name.toLowerCase()
-      .includes(value.toLowerCase()));
-    setResults(searchResults);
-  });
+  const handleFilters = () => {
+    const { comparison, column, qty, searchTerm } = filters;
+    const cases = {
+      'maior que': () => setResults((!filterQty ? allResults : filteredResults)
+        .filter((e) => +e[column] > +qty
+      && e.name.toLowerCase().includes(searchTerm.toLowerCase()))),
+      'menor que': () => setResults((!filterQty ? allResults : filteredResults)
+        .filter((e) => +e[column] < +qty
+      && e.name.toLowerCase().includes(searchTerm.toLowerCase()))),
+      'igual a': () => setResults((!filterQty ? allResults : filteredResults)
+        .filter((e) => +e[column] === +qty
+      && e.name.toLowerCase().includes(searchTerm.toLowerCase()))),
+    };
+    return cases[comparison]
+      ? cases[comparison]()
+      : setResults(allResults.filter((e) => e.name.toLowerCase()
+        .includes(searchTerm.toLowerCase())));
+  };
+
+  useEffect(() => {
+    setFilteredResults(results);
+  }, [results]);
+
+  useEffect(() => {
+    handleFilters();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.searchTerm]);
 
   const data = {
     results,
-    handleSearch,
+    filteredResults,
+    filters,
+    setFilters,
+    setFilterQty,
+    handleFilters,
   };
 
   return (
